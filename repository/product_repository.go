@@ -9,8 +9,8 @@ import (
 type ProductRepository interface {
 	Insert(ctx context.Context, product model.Product) (model.Product, error)
 	FindAll(ctx context.Context) []model.Product
-	FindId(ctx context.Context, id int) (model.Product, error)
-	Update(ctx context.Context, id int) (model.Product, error)
+	FindId(ctx context.Context, id int, product model.Product) (model.Product, error)
+	Update(ctx context.Context, id int, product model.Product, productUpdate model.ProductUpdate) (model.Product, error)
 	Delete(ctx context.Context, id int) (model.Product, error)
 }
 
@@ -36,8 +36,7 @@ func (repository *ProductsRepository) FindAll(ctx context.Context) []model.Produ
 	return product
 }
 
-func (repository *ProductsRepository) FindId(ctx context.Context, id int) (model.Product, error) {
-	var product model.Product
+func (repository *ProductsRepository) FindId(ctx context.Context, id int, product model.Product) (model.Product, error) {
 	product.Id = id
 	tx := helper.DB.WithContext(ctx)
 	tx.First(&product, id)
@@ -45,14 +44,11 @@ func (repository *ProductsRepository) FindId(ctx context.Context, id int) (model
 	return product, nil
 }
 
-func (repository *ProductsRepository) Update(ctx context.Context, id int) (model.Product, error) {
-	var product model.Product
-	var produtInput model.Product
+func (repository *ProductsRepository) Update(ctx context.Context, id int, product model.Product, productUpdate model.ProductUpdate) (model.Product, error) {
 	product.Id = id
 
 	tx := helper.DB.WithContext(ctx)
-	tx.First(&product, id)
-	tx.Model(&product).Updates(produtInput)
+	tx.Model(&product).Updates(productUpdate.ToModel())
 
 	return product, nil
 }

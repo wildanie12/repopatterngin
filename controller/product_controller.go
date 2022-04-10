@@ -30,6 +30,8 @@ func (controller *ProductsController) Create(c *gin.Context) {
 	product := model.Product{}
 	ctx := context.Background()
 
+	c.Bind(&product)
+
 	prod, err := controller.Product.Insert(ctx, product)
 	if err != nil {
 		panic(err)
@@ -41,13 +43,19 @@ func (controller *ProductsController) Create(c *gin.Context) {
 }
 
 func (controller *ProductsController) Update(c *gin.Context) {
+	product := model.Product{}
+	productUpdate := model.ProductUpdate{}
 	ctx := context.Background()
-
 	GetId := c.Param("id")
 	id, _ := strconv.Atoi(GetId)
 
-	prod, err := controller.Product.Update(ctx, id)
+	prod, err := controller.Product.Update(ctx, id, product, productUpdate)
 	if err != nil {
+		panic(err)
+	}
+
+	errOr := c.BindJSON(&prod)
+	if errOr != nil {
 		panic(err)
 	}
 
@@ -68,12 +76,13 @@ func (controller *ProductsController) FindAll(c *gin.Context) {
 }
 
 func (controller *ProductsController) FindById(c *gin.Context) {
+	product := model.Product{}
 	ctx := context.Background()
 
 	GetId := c.Param("id")
 	id, _ := strconv.Atoi(GetId)
 
-	prod, err := controller.Product.FindId(ctx, id)
+	prod, err := controller.Product.FindId(ctx, id, product)
 	if err != nil {
 		panic(err)
 	}
