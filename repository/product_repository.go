@@ -48,7 +48,8 @@ func (repository *ProductsRepository) Update(ctx context.Context, id int, produc
 	product.Id = id
 
 	tx := helper.DB.WithContext(ctx)
-	tx.Model(&product).Updates(productUpdate.ToModel())
+	tx.Model(&product).Where("id = ?", id).Updates(productUpdate)
+	tx.Save(&product)
 
 	return product, nil
 }

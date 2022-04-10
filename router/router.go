@@ -15,5 +15,5 @@ func Run(routermy controller.ProductControler) {
 	router.POST("", routermy.Create)
 	router.DELETE("/:id", routermy.Delete)
 
-	server.Run(":3000")
+	server.Run()
 }
