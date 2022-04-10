@@ -43,24 +43,33 @@ func (controller *ProductsController) Create(c *gin.Context) {
 }
 
 func (controller *ProductsController) Update(c *gin.Context) {
+
+	// Ngambil parameter
 	product := model.Product{}
-	productUpdate := model.ProductUpdate{}
 	ctx := context.Background()
-	GetId := c.Param("id")
-	id, _ := strconv.Atoi(GetId)
+	productID, _ := strconv.Atoi(c.Param("id"))
 
-	prod, err := controller.Product.Update(ctx, id, product, productUpdate)
+
+	// Get product by ID
+	product, err := controller.Product.FindId(ctx, productID)
 	if err != nil {
-		panic(err)
+		c.JSON(http.StatusOK, gin.H{
+			"data": "product dengan id " + c.Param("id") + " tidak ditemukan",
+		})
+	}
+	
+	// Memasukkan request ke entity yang sudah ada
+	c.Bind(&product)
+
+	// Update operation
+	product, err = controller.Product.Update(ctx, productID, product)
+	if err != nil {
+		panic("server error")
 	}
 
-	errOr := c.BindJSON(&prod)
-	if errOr != nil {
-		panic(err)
-	}
-
+	// response
 	c.JSON(http.StatusOK, gin.H{
-		"data": prod,
+		"data": product,
 	})
 }
 
@@ -76,13 +85,12 @@ func (controller *ProductsController) FindAll(c *gin.Context) {
 }
 
 func (controller *ProductsController) FindById(c *gin.Context) {
-	product := model.Product{}
 	ctx := context.Background()
 
 	GetId := c.Param("id")
 	id, _ := strconv.Atoi(GetId)
 
-	prod, err := controller.Product.FindId(ctx, id, product)
+	prod, err := controller.Product.FindId(ctx, id)
 	if err != nil {
 		panic(err)
 	}

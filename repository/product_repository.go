@@ -9,8 +9,8 @@ import (
 type ProductRepository interface {
 	Insert(ctx context.Context, product model.Product) (model.Product, error)
 	FindAll(ctx context.Context) []model.Product
-	FindId(ctx context.Context, id int, product model.Product) (model.Product, error)
-	Update(ctx context.Context, id int, product model.Product, productUpdate model.ProductUpdate) (model.Product, error)
+	FindId(ctx context.Context, id int) (model.Product, error)
+	Update(ctx context.Context, id int, product model.Product) (model.Product, error)
 	Delete(ctx context.Context, id int) (model.Product, error)
 }
 
@@ -21,14 +21,14 @@ func StartProductRepository() ProductRepository {
 	return &ProductsRepository{}
 }
 
-func (repository *ProductsRepository) Insert(ctx context.Context, product model.Product) (model.Product, error) {
+func (repository ProductsRepository) Insert(ctx context.Context, product model.Product) (model.Product, error) {
 	tx := helper.DB.WithContext(ctx)
 	tx.Create(&product)
 
 	return product, nil
 }
 
-func (repository *ProductsRepository) FindAll(ctx context.Context) []model.Product {
+func (repository ProductsRepository) FindAll(ctx context.Context) []model.Product {
 	var product []model.Product
 	tx := helper.DB.WithContext(ctx)
 	tx.Find(&product)
@@ -36,25 +36,25 @@ func (repository *ProductsRepository) FindAll(ctx context.Context) []model.Produ
 	return product
 }
 
-func (repository *ProductsRepository) FindId(ctx context.Context, id int, product model.Product) (model.Product, error) {
+func (repository ProductsRepository) FindId(ctx context.Context, id int) (model.Product, error) {
+	product := model.Product{}
 	product.Id = id
 	tx := helper.DB.WithContext(ctx)
-	tx.First(&product, id)
+	tx.Find(&product, id)
 
 	return product, nil
 }
 
-func (repository *ProductsRepository) Update(ctx context.Context, id int, product model.Product, productUpdate model.ProductUpdate) (model.Product, error) {
+func (repository ProductsRepository) Update(ctx context.Context, id int, product model.Product) (model.Product, error) {
 	product.Id = id
 
 	tx := helper.DB.WithContext(ctx)
-	tx.Model(&product).Where("id = ?", id).Updates(productUpdate)
-	tx.Save(&product)
+	tx.Model(&product).Save(&product)
 
 	return product, nil
 }
 
-func (repository *ProductsRepository) Delete(ctx context.Context, id int) (model.Product, error) {
+func (repository ProductsRepository) Delete(ctx context.Context, id int) (model.Product, error) {
 	var product model.Product
 	product.Id = id
 

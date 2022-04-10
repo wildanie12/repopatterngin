@@ -11,7 +11,7 @@ func Run(routermy controller.ProductControler) {
 	router := server.Group("/api/product")
 	router.GET("", routermy.FindAll)
 	router.GET("/:id", routermy.FindById)
-	router.POST("/:id", routermy.Update)
+	router.PUT("/:id", routermy.Update)
 	router.POST("", routermy.Create)
 	router.DELETE("/:id", routermy.Delete)
 

@@ -17,5 +17,5 @@ func main() {
 	productcontroller := controller.StartProductController(productRespository)
 
 	router.Run(productcontroller)
-
+	
 }
